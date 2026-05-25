@@ -8,24 +8,25 @@ body * {
     font-family: 'Poppins', sans-serif;
 }
 
-#background-img {
+#background-video {
     position: absolute;
     z-index: -1;
-    width: 100vw;
-    height: 100vh;
+    min-width: 100%;
+    min-height: 100%;
 }
 
 header {
     position: fixed;
     height: 100px;
     width: 100vw;
-    opacity: 0.375;
+    opacity: 0.7;
     background-color: black;
 
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     justify-items: center;
     align-items: center;
+    gap: 20px;
 }
 
 header > h3 {
@@ -33,19 +34,42 @@ header > h3 {
     font-size: 2rem;
 }
 
-header>input {
-    min-width: 20rem;
+header > div > input {
+    width: clamp(5rem, 30rem, 40rem);
     height: 2rem;
     font-size: 2rem;
     color: white;
     border-style: none;
     border-bottom: 2px solid #ccc;
-    background-color: rgb(0, 0, 0, 0.375);
+    background-color: rgb(0, 0, 0, 0.7);
     padding: 10px;
 }
 
-header>input:focus {
+
+header > div > input:focus {
     outline: none;
+}
+
+header > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+header > div > button {
+    border-style: none;
+    background-color: rgb(0, 0, 0, 0.375);
+    transition: 0.3s;
+}
+
+header > div > button:active {
+    scale: 0.8;
+}
+
+header > div > button > img { 
+    height: 4rem;
+    filter: invert();
 }
 
 main {
@@ -73,9 +97,6 @@ main>div {
 main>div:last-child {
     grid-column: span 2;
 }
-
-
-#response {}
 
 .toggleCheckbox {
     display: none;

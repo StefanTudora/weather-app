@@ -1,21 +1,10 @@
 import './styles.css';
-
-function applyBackGroundImage() {
-    const img = document.querySelector("#response");
-    fetch('https://api.giphy.com/v1/gifs/translate?api_key=iRgp2JeFzqJVZMQ2rT4TGvneO149Ao2z&s=cats')
-    .then(function(response) {
-        return response.json();
-    }).then(function(response) {
-        img.src = response.data.images.original.url;
-        console.log("Flying cat deployed");
-    });
-    console.log("Done");
-}
+import { createClient } from 'pexels'
 
 function attachDataListListener() {
 
     const datalist = document.querySelector("datalist");
-    document.querySelector("input").addEventListener('input', async(event) => {
+    document.querySelector("input").addEventListener('input', async (event) => {
         const cityName = event.target.value.trim();
         if (cityName.length < 2) {
             return;
@@ -31,15 +20,28 @@ function attachDataListListener() {
                     return;
                 }
                 const cityOption = document.createElement('option');
-                cityOption.value = `${geoCity.toponymName}, ${geoCity.adminName1}`;
+                cityOption.value = addable;
                 datalist.appendChild(cityOption);
             });
         } catch (error) {
             console("Error fetching cities: ", error);
         }
     });
-
 }
 
+function getBackground() {
+    const backgroundVideo = document.querySelector("#background-video");
+    const client = createClient('');
+    const query = 'Rainy day';
+    client.videos.search({ query, per_page: 1, orientation: 'landscape' }).then(result => {
+        const videoEntry = result.videos[0].video_files.find(video => video.width === 1920);
+        backgroundVideo.querySelector("source").setAttribute("src", videoEntry.link);
+        backgroundVideo.load();
+    });
+}
+
+
+
 attachDataListListener();
+getBackground();
 //applyBackGroundImage();
