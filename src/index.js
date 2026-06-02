@@ -1,5 +1,6 @@
 import './styles.css';
 import { createClient } from 'pexels'
+import { format } from 'date-fns'
 
 function attachInputTextListener() {
 
@@ -96,13 +97,53 @@ async function getWeatherForLocation(location) {
     const requestString = query.replaceAll(/\s+/g, '').trim();
     const response = await fetch(requestString);
     const data = await response.json();
-    const image = document.createElement('img');
-    const path = `./assets/WeatherIcons/SVG/1st Set - Color/${data.days[0].icon}.svg`;
-    document.querySelector("main > div:first-child").appendChild(image);
+    // const image = document.createElement('img');
+    // document.querySelector("main > div:first-child").replaceChildren();
+    // document.querySelector("main > div:first-child").appendChild(image);
+
+    // Promise.all(
+    //     Array.from({length: 8}).map(
+    //         (_, idx) => import(`./assets/WeatherIcons/SVG/Color/${data.days[idx].icon}.svg`),
+    //     ),
+    // ).then((icons) => {
+    //     image.setAttribute("src", icons[0].default);
+    //     document.querySelector("main > div:first-child").appendChild(image);
+    // });
+
+    populateRestOfDays(data.days);
 }
+
+function populateRestOfDays(days) {
+    const daysWeatherDiv = document.querySelector("main > div:last-child");
+    daysWeatherDiv.replaceChildren();
+    Promise.all(
+        // import the next 7 days of weather icons
+        days.slice(0, 7).map(
+            day => import(`./assets/WeatherIcons/SVG/Color/${day.icon}.svg`)
+        ),
+    ).then((icons) => {
+        icons.forEach((icon, idx) => {
+            daysWeatherDiv.appendChild(getCard(days[idx], icon));
+        });
+    });
+}
+
+function getCard(day, icon) {
+    const weatherCard = document.createElement("div");
+    // daytime
+    weatherCard.innerHTML = `
+        <div class="day-card">
+            <h3>${format(day.datetime, 'EEEE')}</h3>
+            <img src="${icon.default}">
+            <p>Hello. there!</p>
+        </div>
+    `;
+    return weatherCard;
+}
+
+
 
 attachInputTextListener();
 getBackgroundForLocation("Montana");
 attachVideoListener();
 attachInputActionListener();
-//applyBackGroundImage();
