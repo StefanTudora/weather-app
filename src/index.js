@@ -34,30 +34,16 @@ function getBackgroundForLocation(location) {
     const backgroundVideo = document.querySelector("#background-video");
     const client = createClient('v2t9tKiz4DQ2dUkjhksC2vtPTPY5xWMrYXNjdh3iZlB9xSmSulH8Pik3');
     const query = location;
-    client.videos.search({ query, per_page: 1, orientation: 'landscape' }).then(result => {
-        const videoEntry = result.videos[0].video_files.find(video => video.width === 1920);
-        if (videoEntry !== undefined) {
-            backgroundVideo.querySelector("source").setAttribute("src", videoEntry.link);
-            backgroundVideo.load();
-        }
-    });
-}
-
-function attachVideoListener() {
-    const video = document.querySelector("#background-video");
-    const spinner = document.querySelector("#spinner");
-
-    video.addEventListener('waiting', () => {
-        spinner.style.display = 'block';
-    });
-
-    video.addEventListener('canplay', () => {
-        spinner.style.display = 'nonen';
-    });
-
-    video.addEventListener('playing', () => {
-        spinner.style.display = 'none';
-    });
+    client.videos.search({ query, per_page: 1, orientation: 'landscape' })
+        .then(result => {
+            const videoEntry = result.videos[0].video_files.find(video => video.width === 1920);
+            if (videoEntry !== undefined) {
+                backgroundVideo.querySelector("source").setAttribute("src", videoEntry.link);
+                backgroundVideo.load();
+            }
+        }).catch(error => {
+            console.error("Error fetching background video:", error);
+        });
 }
 
 function attachInputActionListener() {
@@ -165,24 +151,20 @@ function getConvertedTemp(temperature) {
 
 function attachTemperatureListener() {
     const tempToggleBtn = document.querySelector("#toggle");
-    const getParent = (elem) => {
-        const parent = elem.parentElement.parentElement;
-        console.log(parent !== undefined);
-        return parent;
-    }
+    const getParent = (elem) => elem.closest('div');
     tempToggleBtn.addEventListener("click", () => {
         const mainTemp = document.querySelector(".curr-temp");
-        mainTemp.textContent = getConvertedTemp(getParent(mainTemp).currtemp);
+        mainTemp.textContent = getConvertedTemp(getParent(mainTemp).dataset.currtemp);
 
         const maxTempList = document.querySelectorAll(".max-temp");
         maxTempList.forEach(node => {
-            node.textContent = getConvertedTemp(getParent(node).tempmax);
+            node.textContent = getConvertedTemp(getParent(node).dataset.tempmax);
         });
         const minTempList = document.querySelectorAll(".min-temp");
         minTempList.forEach(node => {
-            node.textContent = getConvertedTemp(getParent(node).tempmin);
+            node.textContent = getConvertedTemp(getParent(node).dataset.tempmin);
         })
-    }); 
+    });
 }
 
 function renderAdditionalInfoCurrDay(day) {
@@ -192,7 +174,7 @@ function renderAdditionalInfoCurrDay(day) {
     const weatherPropertiesMap = new Map([
         ['Humidity', `${day.humidity} <span style="font-size: 1.5rem;">%</span>`],
         ['Pressure', `${day.pressure} <span style="font-size: 1.5rem;">mmHg</span>`],
-        ['Chance of Rain', `${day.precipprob} <span style="font-size: 1.5rem;">%</span>`],  
+        ['Chance of Rain', `${day.precipprob} <span style="font-size: 1.5rem;">%</span>`],
         ['Wind Speed', `${day.windspeed} <span style="font-size: 1.5rem;">km/h</span>`]
     ]);
 
@@ -211,5 +193,4 @@ attachTemperatureListener();
 attachInputTextListener();
 getBackgroundForLocation("Florence, Tuscany");
 getWeatherForLocation("Florence, Tuscany")
-attachVideoListener();
 attachInputActionListener();
