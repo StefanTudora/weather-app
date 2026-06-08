@@ -61,9 +61,7 @@ function attachVideoListener() {
 }
 
 function attachInputActionListener() {
-
     const searchBar = document.querySelector("#search-bar");
-
     const fetchData = (searchString) => {
         try {
             const entry = Array.from(searchBar.querySelectorAll("option")).find(option => option.value === searchString);
@@ -75,14 +73,12 @@ function attachInputActionListener() {
             console.log(`Location string invalid: ${error}`);
         }
     }
-
     searchBar.querySelector("input").addEventListener("keypress", (event) => {
         if (event.key !== 'Enter') {
             return;
         }
         fetchData(event.target.value.trim());
     });
-
     searchBar.querySelector("button").addEventListener("click", () => {
         fetchData(searchBar.querySelector("input").value);
     });
@@ -97,28 +93,44 @@ async function getWeatherForLocation(location) {
     const requestString = query.replaceAll(/\s+/g, '').trim();
     const response = await fetch(requestString);
     const data = await response.json();
-    // const image = document.createElement('img');
-    // document.querySelector("main > div:first-child").replaceChildren();
-    // document.querySelector("main > div:first-child").appendChild(image);
-
-    // Promise.all(
-    //     Array.from({length: 8}).map(
-    //         (_, idx) => import(`./assets/WeatherIcons/SVG/Color/${data.days[idx].icon}.svg`),
-    //     ),
-    // ).then((icons) => {
-    //     image.setAttribute("src", icons[0].default);
-    //     document.querySelector("main > div:first-child").appendChild(image);
-    // });
-
-    populateRestOfDays(data.days);
+    renderCurrentDayData(data.days[0], data.address);
+    renderAdditionalInfoCurrDay(data.days[0]);
+    renderWeekdaysForecast(data.days.slice(1, 8));
 }
 
-function populateRestOfDays(days) {
+function renderCurrentDayData(day, location) {
+    const dayWeatherDiv = document.querySelector("main > div:first-child");
+    // Use saved temperatures for every temperature conversion as to not make the result drift
+    dayWeatherDiv.dataset.currtemp = day.temp;
+    dayWeatherDiv.dataset.tempmax = day.tempmax;
+    dayWeatherDiv.dataset.tempmin = day.tempmin;
+    // Empty previous data
+    dayWeatherDiv.replaceChildren();
+    new Promise((resolve, reject) => {
+        const img = import(`./assets/WeatherIcons/SVG/Color/${day.icon}.svg`);
+        if (img !== undefined) {
+            resolve(img);
+        } else {
+            reject("Couldn't find the image.");
+        }
+    }).then((icon) => {
+        dayWeatherDiv.innerHTML = `
+                <h3>${location}</h3>
+                <p>${day.conditions}</p>
+                <p>Currently <span class="curr-temp">${getConvertedTemp(day.temp)}<span></p>
+                <p class="min-max">Max/Min: <span class="max-temp">${getConvertedTemp(dayWeatherDiv.dataset.tempmax)}</span>, <span class="min-temp">${getConvertedTemp(dayWeatherDiv.dataset.tempmin)}</span></p> 
+                <img src="${icon.default}">
+            `;
+    }).catch((errorMsg) => {
+        console.log(errorMsg);
+    });
+}
+
+function renderWeekdaysForecast(days) {
     const daysWeatherDiv = document.querySelector("main > div:last-child");
     daysWeatherDiv.replaceChildren();
     Promise.all(
-        // import the next 7 days of weather icons
-        days.slice(0, 7).map(
+        days.map(
             day => import(`./assets/WeatherIcons/SVG/Color/${day.icon}.svg`)
         ),
     ).then((icons) => {
@@ -130,20 +142,74 @@ function populateRestOfDays(days) {
 
 function getCard(day, icon) {
     const weatherCard = document.createElement("div");
-    // daytime
+    weatherCard.dataset.tempmax = day.tempmax;
+    weatherCard.dataset.tempmin = day.tempmin;
     weatherCard.innerHTML = `
-        <div class="day-card">
-            <h3>${format(day.datetime, 'EEEE')}</h3>
-            <img src="${icon.default}">
-            <p>Hello. there!</p>
-        </div>
+        <h3>${format(day.datetime, 'EEEE')}</h3>
+        <img src="${icon.default}">
+        <p>${day.conditions}</p>
+        <p><span class="max-temp">${getConvertedTemp(weatherCard.dataset.tempmax)}</span>, <span class="min-temp">${getConvertedTemp(weatherCard.dataset.tempmin)}</span></p>
     `;
+    weatherCard.setAttribute("class", "day-card");
     return weatherCard;
 }
 
+function getConvertedTemp(temperature) {
+    const state = document.querySelector("#toggle").checked;
+    var convertor = (value) => `${value} \u00B0F`;
+    if (state) {
+        convertor = (value) => `${((value - 32) / 1.8).toFixed(1)} \u00B0C`;
+    }
+    return convertor(temperature);
+}
+
+function attachTemperatureListener() {
+    const tempToggleBtn = document.querySelector("#toggle");
+    const getParent = (elem) => {
+        const parent = elem.parentElement.parentElement;
+        console.log(parent !== undefined);
+        return parent;
+    }
+    tempToggleBtn.addEventListener("click", () => {
+        const mainTemp = document.querySelector(".curr-temp");
+        mainTemp.textContent = getConvertedTemp(getParent(mainTemp).currtemp);
+
+        const maxTempList = document.querySelectorAll(".max-temp");
+        maxTempList.forEach(node => {
+            node.textContent = getConvertedTemp(getParent(node).tempmax);
+        });
+        const minTempList = document.querySelectorAll(".min-temp");
+        minTempList.forEach(node => {
+            node.textContent = getConvertedTemp(getParent(node).tempmin);
+        })
+    }); 
+}
+
+function renderAdditionalInfoCurrDay(day) {
+    const weatherCard = document.querySelector("main > div:nth-child(2)");
+    weatherCard.replaceChildren();
+
+    const weatherPropertiesMap = new Map([
+        ['Humidity', `${day.humidity} <span style="font-size: 1.5rem;">%</span>`],
+        ['Pressure', `${day.pressure} <span style="font-size: 1.5rem;">mmHg</span>`],
+        ['Chance of Rain', `${day.precipprob} <span style="font-size: 1.5rem;">%</span>`],  
+        ['Wind Speed', `${day.windspeed} <span style="font-size: 1.5rem;">km/h</span>`]
+    ]);
+
+    for (const [key, value] of weatherPropertiesMap) {
+        const propertyDiv = document.createElement("div");
+        propertyDiv.innerHTML = `
+            <h3>${key}</h3>
+            <p>${value}</p>
+        `;
+        weatherCard.appendChild(propertyDiv);
+    }
+}
 
 
+attachTemperatureListener();
 attachInputTextListener();
-getBackgroundForLocation("Montana");
+getBackgroundForLocation("Florence, Tuscany");
+getWeatherForLocation("Florence, Tuscany")
 attachVideoListener();
 attachInputActionListener();
