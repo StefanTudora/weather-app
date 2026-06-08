@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>WeatherMind</title>
+<script defer src="main.js"></script></head>
+
+<body>
+    <div id="background-div">
+        <video id="background-video" autoplay muted loop>
+            <source src="#">
+        </video>
+        <div id="spinner"></div>
+    </div>
+
+    <header>
+        <h3>WeatherMind</h3>
+        <div id="search-bar">
+            <input list="cities" placeholder="Search city...">
+            <datalist id="cities">
+                <!-- Handled dinamically -->
+            </datalist>
+            <button><img src="b0fd0bc58527b722641d.svg"></button>
+        </div>
+        <input type="checkbox" id="toggle" class="toggleCheckbox">
+        <label for="toggle" class="toggleContainer">
+            <div>Fahrenheit</div>
+            <div>Celsius</div>
+        </label>
+    </header>
+
+    <main>
+        <!-- Handled dinamically -->
+        <div>
+            <!-- Current day weather general info -->
+        </div>
+        <div>
+            <!-- Additional info for the current day -->
+        </div>
+        <div>
+            <!-- Forecast over the next seven days -->
+        </div>
+    </main>
+</body>
+
+</html>
