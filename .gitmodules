@@ -1,0 +1,3 @@
+[submodule "src/assets/WeatherIcons"]
+	path = src/assets/WeatherIcons
+	url = https://github.com/visualcrossing/WeatherIcons
