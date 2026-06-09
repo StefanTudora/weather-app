@@ -93,7 +93,7 @@ function renderCurrentDayData(day, location) {
     // Empty previous data
     dayWeatherDiv.replaceChildren();
     new Promise((resolve, reject) => {
-        const img = import(`./assets/WeatherIcons/SVG/Color/${day.icon}.svg`);
+        const img = import(`./assets/WeatherIcons/SVG/1st Set - Color/${day.icon}.svg`);
         if (img !== undefined) {
             resolve(img);
         } else {
@@ -117,7 +117,7 @@ function renderWeekdaysForecast(days) {
     daysWeatherDiv.replaceChildren();
     Promise.all(
         days.map(
-            day => import(`./assets/WeatherIcons/SVG/Color/${day.icon}.svg`)
+            day => import(`./assets/WeatherIcons/SVG/1st Set - Color/${day.icon}.svg`)
         ),
     ).then((icons) => {
         icons.forEach((icon, idx) => {
