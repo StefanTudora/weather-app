@@ -7,15 +7,15 @@
  * or disable the default devtool with "devtool: false".
  * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
  */
-(self["webpackChunkweather_app"] = self["webpackChunkweather_app"] || []).push([["src_assets_WeatherIcons_SVG_1st_Set_-_Color_hail_svg"],{
+(self["webpackChunkweather_app"] = self["webpackChunkweather_app"] || []).push([["src_assets_weather-icons_clear-night_svg"],{
 
-/***/ "./src/assets/WeatherIcons/SVG/1st Set - Color/hail.svg"
-/*!**************************************************************!*\
-  !*** ./src/assets/WeatherIcons/SVG/1st Set - Color/hail.svg ***!
-  \**************************************************************/
+/***/ "./src/assets/weather-icons/clear-night.svg"
+/*!**************************************************!*\
+  !*** ./src/assets/weather-icons/clear-night.svg ***!
+  \**************************************************/
 (module, __unused_webpack_exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "3889cfa8600afb2befbe.svg";
+module.exports = __webpack_require__.p + "10da86080cdf8ab805dc.svg";
 
 /***/ }
 
