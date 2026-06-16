@@ -107,8 +107,8 @@ function renderCurrentDayData(day, location) {
                 <p class="min-max">Max/Min: <span class="max-temp">${getConvertedTemp(dayWeatherDiv.dataset.tempmax)}</span>, <span class="min-temp">${getConvertedTemp(dayWeatherDiv.dataset.tempmin)}</span></p> 
                 <img src="${icon.default}">
             `;
-    }).catch((errorMsg) => {
-        console.log(errorMsg);
+    }).catch((error) => {
+        console.log(error);
     });
 }
 
